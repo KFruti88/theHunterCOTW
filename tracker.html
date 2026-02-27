@@ -1,13 +1,4 @@
-<!-- 
-  Project: theHunter: Call of the Wild - Global Master Tracker (v2.5.1)
-  Lead Developer: Werewolf3788 (GitHub: KFruti88)
-  Collaborators: Raymystyro (lonewolf), terrdog420 (DarkWing Dog)
-  Source: Surgical JSON Sync & Per-User Cloud Isolation
-  Platform: WordPress Compatible (#wp-custom-wrapper)
--->
-
 <div id="wp-custom-wrapper">
-    <!-- Firebase SDKs - Compatibility Version for broad browser support -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -21,13 +12,11 @@
                     <div id="twitch-status" class="twitch-status">Twitch: Checking Status...</div>
                 </div>
                 <div class="header-controls">
-                    <span id="version-tag" class="text-[9px] opacity-30 mr-2">v2.5.1</span>
+                    <span id="version-tag" class="text-[9px] opacity-30 mr-2">v2.5.2</span>
                     <button id="sync-btn" onclick="syncWithPSN()" class="sync-button">🔄 Sync Profile</button>
                 </div>
             </div>
-            
-            <p id="stats-summary" class="status-text">Lead Dev: Werewolf3788 | Registry: Booting...</p>
-            
+            <p id="stats-summary" class="status-text">Registry: Booting...</p>
             <div class="psn-card-container">
                 <a href="https://psnprofiles.com/Werewolf3788" target="_blank">
                     <img src="https://card.psnprofiles.com/1/Werewolf3788.png" border="0" alt="Werewolf PSN Card" class="psn-card-img">
@@ -35,42 +24,16 @@
             </div>
         </header>
 
-        <!-- GLOBAL HARVEST SUITE -->
-        <div class="section-title game-stats-title flex justify-between">
-            <span>🏆 Lifetime Harvest Ranks</span>
-            <span id="cloud-status" style="font-size: 0.6rem; color: #f39c12;">Cloud: Connecting...</span>
-        </div>
-        <div class="mission-card-simple mb-4 p-4">
-            <div id="rank-rows-root" class="rank-grid"></div>
+        <div class="section-title border-blue-500/50 text-blue-400">🗺️ Tactical Reserve Map</div>
+        <div id="tactical-map-container" style="width: 100%; aspect-ratio: 1/1; background: #000; border: 2px solid #2ecc71; border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
+            <iframe id="map-frame" src="" style="width: 100%; height: 100%; border: none; display: none; background: transparent;"></iframe>
+            <div id="map-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: bold; text-align: center; padding: 20px;">
+                SELECT A RESERVE BELOW TO LOAD THE TACTICAL MAP
+            </div>
         </div>
 
-        <!-- PLATFORM PROGRESS CENTER -->
-        <div class="section-title border-blue-500/50 text-blue-400 flex justify-between items-center">
-            <span>🎮 Platform Progress Report</span>
-            <div class="flex items-center gap-2">
-                <span id="active-plat-badge" class="plat-badge">PS5</span>
-                <select id="platform-selector" onchange="switchPlatform(this.value)" class="platform-select-dropdown">
-                    <option value="ps5">PlayStation 5</option>
-                    <option value="ps4">PlayStation 4</option>
-                    <option value="xbox">Xbox Series / One</option>
-                    <option value="pc">PC (Steam/Epic)</option>
-                </select>
-            </div>
-        </div>
-        <div class="mission-card-simple mb-6 p-4 text-left">
-            <div class="flex justify-between items-center mb-2">
-                <span id="active-platform-name" class="text-[10px] font-black uppercase text-blue-300">PlayStation 5</span>
-                <span id="platform-percent" class="text-[10px] font-bold text-blue-400">0%</span>
-            </div>
-            <div class="progress-bar-bg mb-4">
-                <div id="platform-bar" class="progress-bar-fill bg-blue-500" style="width: 0%"></div>
-            </div>
-            <div id="platform-trophy-stats" class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1"></div>
-        </div>
-
-        <!-- DYNAMIC RESERVE ENGINE -->
         <div class="section-title border-emerald-500/50 text-emerald-400 flex justify-between items-center">
-            <span>🗺️ <span id="display-map-name">Reserve</span> Intel & Missions</span>
+            <span>📊 <span id="display-map-name">Reserve</span> Intel</span>
             <select id="map-selector" onchange="switchMap(this.value)" class="map-select-dropdown">
                 <option>Loading Maps...</option>
             </select>
@@ -80,376 +43,126 @@
             <div class="mission-card-simple p-4">
                 <p class="section-sub">Map Species Harvests</p>
                 <div id="species-harvest-root"></div>
-                
-                <p class="section-sub mt-6">G.O. Grind (Map Specific)</p>
+                <p class="section-sub mt-6">G.O. Grind</p>
                 <div id="go-grind-root"></div>
-                
-                <div class="upload-grid mt-6">
-                    <button onclick="triggerUpload('diamond')" class="upload-btn border-cyan-500/40">
-                        <span class="text-cyan-400">💎 Sync Diamond Image</span>
-                    </button>
-                    <button onclick="triggerUpload('greatone')" class="upload-btn border-red-500/40">
-                        <span class="text-red-400">👑 Sync G.O. Image</span>
-                    </button>
-                </div>
-                <input type="file" id="trophy-upload" class="hidden" style="display:none" accept="image/*" onchange="handleImageUpload(this)">
             </div>
-            
             <div class="mission-card-simple p-4 mission-scroll-container">
                 <p class="section-sub" id="mission-warden-label">Reserve Missions</p>
                 <div id="mission-engine-root"></div>
             </div>
         </div>
 
-        <!-- HALL OF FAME IMAGE ARCHIVE -->
-        <div class="section-title text-emerald-500 border-emerald-500">🖼️ Harvest Image Archive</div>
-        <div id="hall-of-fame" class="hof-grid mb-8">
-            <div class="hof-item-container">
-                <div class="hof-aspect-box border-red-500/40" onclick="triggerUpload('greatone')">
-                    <img id="img-greatone" src="https://placehold.co/600x400/200000/ff0000?text=NO+G.O.+ARCHIVE" class="hof-img" alt="G.O. Archive">
-                    <div class="absolute top-2 left-2 px-2 py-1 bg-red-600 text-[9px] font-black uppercase rounded">G.O. Archive</div>
-                </div>
-            </div>
-            <div class="hof-item-container">
-                <div class="hof-aspect-box border-cyan-500/40" onclick="triggerUpload('diamond')">
-                    <img id="img-diamond" src="https://placehold.co/600x400/002020/00f2ff?text=NO+DIAMOND+ARCHIVE" class="hof-img" alt="Diamond Archive">
-                    <div class="absolute top-2 left-2 px-2 py-1 bg-cyan-600 text-[9px] font-black uppercase rounded">Diamond Archive</div>
-                </div>
-            </div>
-        </div>
+        <div class="section-title game-stats-title">🏆 Lifetime Harvest Ranks</div>
+        <div class="mission-card-simple mb-8 p-4"><div id="rank-rows-root" class="rank-grid"></div></div>
 
         <footer class="tracker-footer">
             <div class="footer-links">
                 <a href="https://www.amazon.com/gp/goldbox?tag=todaysdealswerewolf-20" target="_blank">Today's Deals</a>
                 <a href="https://www.amazon.com/s?k=fishing&tag=psngaming-20" target="_blank">Hunting Gear</a>
-                <a href="https://www.amazon.com/s?k=farming&crid=3BPEBJSV4GEII&sprefix=farmin%2Caps%2C204&tag=psngaming-20" target="_blank">Farming Tools</a>
-                <a href="https://www.amazon.com/s?k=need+for+speed&crid=3I7R0TP9XV6CJ&sprefix=need+for+spee%2Caps%2C183&tag=psngaming-20" target="_blank">Gaming Gear</a>
-                <a href="https://www.amazon.com/gp/goldbox?tag=ourflorafb-20" target="_blank">Daily Deals</a>
+                <a href="https://www.amazon.com/s?k=farming&tag=psngaming-20" target="_blank">Farming Tools</a>
             </div>
-            <p>Lead Dev: Werewolf3788 | Source: KFruti88 GitHub | v2.5.1 Live Account Sync</p>
+            <p>Lead Dev: Werewolf3788 | Source: KFruti88 GitHub | v2.5.2</p>
         </footer>
     </div>
 
     <style>
-        #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', Roboto, sans-serif; color: #ffffff; display: flex; justify-content: center; width: 100%; }
-        .cotw-dashboard { width: 95%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 25px; box-shadow: 0 20px 80px rgba(0,0,0,0.9); box-sizing: border-box; }
-        .tracker-header { text-align: center; border-bottom: 2px solid rgba(46,204,113,0.3); margin-bottom: 20px; padding-bottom: 20px; }
-        .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
-        .tracker-header h1 { margin: 0; color: #2ecc71; text-transform: uppercase; letter-spacing: 3px; font-size: 1.6rem; font-weight: 900; }
-        .status-text { font-size: 0.8rem; margin: 8px 0; opacity: 0.7; font-weight: bold; text-align: center; text-transform: uppercase; }
-        .twitch-status { font-size: 0.65rem; color: #9146ff; font-weight: bold; background: rgba(145, 70, 255, 0.1); padding: 3px 10px; border-radius: 4px; border: 1px solid #9146ff; display: inline-block; margin-top: 5px; }
-        
-        .plat-badge { font-size: 0.6rem; border: 1px solid #2ecc71; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
-
-        .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', sans-serif; color: #fff; display: flex; justify-content: center; width: 100%; }
+        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 25px; box-sizing: border-box; }
+        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; font-size: 1.6rem; margin: 0; }
+        .section-title { background: rgba(46, 204, 113, 0.1); padding: 10px; margin: 20px 0 10px; border-left: 6px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
+        .game-stats-title { border-left-color: #f39c12; color: #f39c12; }
         .grid-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) { .grid-container { grid-template-columns: 4fr 6fr; } }
-        
-        .hof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .hof-aspect-box { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; border-radius: 12px; border: 1px solid; background: #000; cursor: pointer; transition: 0.3s; }
-        .hof-aspect-box:hover { transform: scale(1.02); border-color: #fff; }
-        .hof-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-
-        .mission-scroll-container { max-height: 850px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2ecc71 rgba(0,0,0,0.3); }
-        .section-title { background: rgba(46, 204, 113, 0.1); padding: 10px 15px; margin: 25px 0 10px; border-left: 6px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
-        .game-stats-title { border-left-color: #f39c12; color: #f39c12; background: rgba(243, 156, 18, 0.1); }
-        .section-sub { font-size: 0.75rem; color: #2ecc71; text-transform: uppercase; font-weight: 900; margin-bottom: 12px; border-bottom: 1px solid rgba(46,204,113,0.2); padding-bottom: 5px; }
-        
-        .mission-row, .species-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 5px; }
-        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.2s; }
-        .btn-ctrl:hover { background: #2ecc71; color: #111; }
-        .count-display { font-family: 'Courier New', monospace; color: #2ecc71; font-weight: 800; font-size: 1.1rem; margin: 0 10px; min-width: 25px; text-align: center; }
-        
-        .progress-bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; transition: width 0.5s ease; }
-        
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .upload-btn { background: rgba(255,255,255,0.05); border: 1px solid; border-radius: 10px; padding: 12px; cursor: pointer; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        
-        .map-select-dropdown, .platform-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; font-weight: 900; }
-        .psn-card-img { height: 50px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; }
-        .tracker-footer { margin-top: 40px; text-align: center; font-size: 0.75rem; opacity: 0.7; padding-bottom: 20px; border-top: 1px solid rgba(46,204,113,0.2); padding-top: 20px; }
-        .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
-        .footer-links a { color: #2ecc71; text-decoration: none; font-weight: bold; }
-        .boss-text { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-        .rank-label { font-size: 9px; font-weight: 900; text-transform: uppercase; opacity: 0.6; }
-        .mission-group-label { font-size: 0.65rem; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; color: #aaa; margin: 15px 0 5px; display: block; text-transform: uppercase; font-weight: bold; border-left: 3px solid #2ecc71; }
+        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; padding: 8px; border-radius: 6px; font-weight: bold; }
+        .mission-row, .species-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; }
+        .count-display { color: #2ecc71; font-weight: 800; margin: 0 10px; }
+        .psn-card-img { height: 50px; margin-top: 10px; border-radius: 6px; }
+        .twitch-status { font-size: 0.65rem; color: #9146ff; border: 1px solid #9146ff; padding: 2px 8px; border-radius: 4px; margin-top: 5px; display: inline-block; }
+        .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
     </style>
 
     <script>
         const startApp = () => {
             if (typeof firebase === 'undefined') { setTimeout(startApp, 100); return; }
-
-            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'global-master-sync';
-            const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-            const auth = firebase.auth();
+            
+            // Initialization
             const db = firebase.firestore();
-            const storage = firebase.storage();
-
-            let localTrophyData = {};
             let mapSkeleton = {};
             let activeMapId = '';
-            let activePlatformId = 'ps5';
 
-            const platformMeta = {
-                ps5: { name: "PlayStation 5", color: "#003791" },
-                ps4: { name: "PlayStation 4", color: "#003791" },
-                xbox: { name: "Xbox Series/One", color: "#107c10" },
-                pc: { name: "PC Master Race", color: "#ffffff" }
-            };
-
-            const achievementRanks = [
-                { k: 'p_plat', l: 'Platinum', c: 'slate-100', t: 1 },
-                { k: 'p_gold', l: 'Gold', c: 'yellow-400', t: 2 },
-                { k: 'p_silver', l: 'Silver', c: 'slate-300', t: 15 },
-                { k: 'p_bronze', l: 'Bronze', c: 'orange-400', t: 33 }
-            ];
-
-            // --- SURGICAL REGISTRY ENGINE v2.5.1 ---
-            const extractMapsFromText = (text) => {
-                const maps = {};
-                let braceCount = 0;
-                let start = -1;
-                for (let i = 0; i < text.length; i++) {
-                    if (text[i] === '{') {
-                        if (braceCount === 0) start = i;
-                        braceCount++;
-                    } else if (text[i] === '}') {
-                        braceCount--;
-                        if (braceCount === 0 && start !== -1) {
-                            const jsonChunk = text.substring(start, i + 1);
-                            try {
-                                const parsed = JSON.parse(jsonChunk);
-                                if (parsed.name && (parsed.species || parsed.missions)) {
-                                    maps[parsed.id || parsed.name.toLowerCase().replace(/\s+/g, '_')] = parsed;
-                                } else {
-                                    Object.keys(parsed).forEach(key => {
-                                        if (parsed[key] && typeof parsed[key] === 'object' && parsed[key].name) {
-                                            maps[key] = parsed[key];
-                                        }
-                                    });
-                                }
-                            } catch (e) {}
-                            start = -1;
-                        }
-                    }
-                }
-                return maps;
-            };
-
+            // --- LOAD MAP DATA FROM GITHUB ---
             const loadRegistry = async () => {
                 const rawUrl = `https://raw.githubusercontent.com/KFruti88/PSN/main/Skeleton/thehunter/map_data.json`;
                 try {
-                    const response = await fetch(rawUrl);
-                    const text = await response.text();
-                    const foundMaps = extractMapsFromText(text);
-                    mapSkeleton = foundMaps;
+                    const res = await fetch(rawUrl);
+                    const data = await res.json();
+                    mapSkeleton = data;
                     
                     const selector = document.getElementById('map-selector');
-                    selector.innerHTML = "";
-                    const ids = Object.keys(foundMaps);
-                    ids.forEach((id, index) => {
+                    selector.innerHTML = '<option value="">-- Choose Reserve --</option>';
+                    
+                    Object.keys(data).forEach(id => {
                         const opt = document.createElement('option');
                         opt.value = id;
-                        opt.text = foundMaps[id].name;
+                        opt.text = data[id].name;
                         selector.add(opt);
-                        if (index === 0 && !activeMapId) activeMapId = id;
                     });
-
-                    document.getElementById('stats-summary').innerText = `Registry: ${ids.length} Reserves Synced | Lead Dev: Werewolf3788`;
-                    renderAll();
-                } catch (e) {
-                    console.error("Registry Load Fail:", e);
-                }
+                    document.getElementById('stats-summary').innerText = `Registry: ${Object.keys(data).length} Reserves Synced`;
+                } catch (e) { console.error("Data Load Fail", e); }
             };
 
-            // --- CLOUD SYNC & ISOLATION ---
-            const getPath = (user) => db.collection('artifacts').doc(appId).collection('public').doc('data').collection('userTrophies').doc(user.uid);
+            // --- MAP SWITCHER (Logic to load the HTML file) ---
+            window.switchMap = (id) => {
+                if(!id) return;
+                activeMapId = id;
+                
+                // 1. Update Tracker Text
+                document.getElementById('display-map-name').innerText = mapSkeleton[id].name;
+                
+                // 2. Load the actual HTML Map from your GitHub Pages
+                // This assumes your GitHub Pages is active at kfruti88.github.io
+                const mapFrame = document.getElementById('map-frame');
+                const placeholder = document.getElementById('map-placeholder');
+                
+                mapFrame.src = `https://kfruti88.github.io/PSN/Skeleton/thehunter/${id}.html`;
+                mapFrame.style.display = "block";
+                placeholder.style.display = "none";
 
-            const initAuth = async () => {
-                try {
-                    if (initialToken) await auth.signInWithCustomToken(initialToken);
-                    else await auth.signInAnonymously();
-                } catch (err) { console.error("Auth Fail", err); }
+                renderActiveMap(); // Runs your species/mission lists
             };
-
-            initAuth().then(() => {
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        const cloudEl = document.getElementById('cloud-status');
-                        if (cloudEl) { cloudEl.innerText = "ACCOUNT SECURE (ONLINE)"; cloudEl.style.color = "#2ecc71"; }
-                        
-                        getPath(user).onSnapshot(doc => {
-                            if (doc.exists) {
-                                localTrophyData = doc.data();
-                                renderAll();
-                            } else {
-                                doc.ref.set({ created: Date.now(), maps: {} }, { merge: true });
-                            }
-                        }, (err) => console.error("Firestore Error", err));
-                    }
-                });
-            });
-
-            // --- UPDATE LOGIC ---
-            window.updateMapStat = async (category, statId, delta, limit = null) => {
-                const u = auth.currentUser; if (!u || !activeMapId) return;
-                const maps = localTrophyData.maps || {};
-                const mapData = maps[activeMapId] || {};
-                const catData = mapData[category] || {};
-                let newVal = (catData[statId] || 0) + delta;
-                if (newVal < 0) newVal = 0;
-                if (limit !== null && newVal > limit) newVal = limit;
-                getPath(u).set({ maps: { [activeMapId]: { [category]: { [statId]: newVal } } } }, { merge: true });
-            };
-
-            window.updateGlobalStat = async (key, delta) => {
-                const u = auth.currentUser; if (!u) return;
-                getPath(u).set({ [key]: Math.max(0, (localTrophyData[key] || 0) + delta) }, { merge: true });
-            };
-
-            window.updatePlatformStats = async (plat, key, delta, limit) => {
-                const u = auth.currentUser; if (!u) return;
-                const field = plat + '_stats';
-                const cur = localTrophyData[field] || {};
-                let newVal = (cur[key] || 0) + delta;
-                if (newVal < 0) newVal = 0; if (newVal > limit) newVal = limit;
-                getPath(u).set({ [field]: { ...cur, [key]: newVal } }, { merge: true });
-            };
-
-            // --- RENDER ENGINE ---
-            function renderAll() {
-                renderActiveMap();
-                renderPlatformReport();
-                renderRankRows();
-                if (localTrophyData.img_diamond) document.getElementById('img-diamond').src = localTrophyData.img_diamond;
-                if (localTrophyData.img_greatone) document.getElementById('img-greatone').src = localTrophyData.img_greatone;
-            }
 
             const renderActiveMap = () => {
                 const data = mapSkeleton[activeMapId];
                 if (!data) return;
-                document.getElementById('display-map-name').innerText = data.name;
-                document.getElementById('mission-warden-label').innerText = `Missions (Warden: ${data.warden || 'N/A'})`;
                 
-                const mapProg = localTrophyData.maps?.[activeMapId] || {};
-                
-                // Species
-                const sCounts = mapProg.speciesCounts || {};
+                // Species Render
                 document.getElementById('species-harvest-root').innerHTML = (data.species || []).map(s => `
                     <div class="species-row">
-                        <span class="text-[10px] font-bold uppercase">CL ${s.class} <strong>${s.name}</strong></span>
+                        <span style="font-size: 10px;">CL ${s.class} <strong>${s.name}</strong></span>
                         <div class="flex items-center">
-                            <button class="btn-ctrl" onclick="updateMapStat('speciesCounts', '${s.id}', -1)">-</button>
-                            <span class="count-display">${sCounts[s.id] || 0}</span>
-                            <button class="btn-ctrl" onclick="updateMapStat('speciesCounts', '${s.id}', 1)">+</button>
+                            <button class="btn-ctrl">-</button>
+                            <span class="count-display">0</span>
+                            <button class="btn-ctrl">+</button>
                         </div>
                     </div>
                 `).join('');
-
-                // G.O.
-                const gProg = mapProg.grindProgress || {};
-                document.getElementById('go-grind-root').innerHTML = (data.grinds || []).map(g => `
-                    <div class="species-row border-red-500/30">
-                        <span class="text-[10px] text-red-400 font-black uppercase">G.O. <strong>${g.name.split(' ')[0]}</strong></span>
-                        <div class="flex items-center">
-                            <button class="btn-ctrl" onclick="updateMapStat('grindProgress', '${g.id}', -1)">-</button>
-                            <span class="count-display text-red-500">${gProg[g.id] || 0}</span>
-                            <button class="btn-ctrl" onclick="updateMapStat('grindProgress', '${g.id}', 1)">+</button>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Missions
-                const mProg = mapProg.missionProgress || {};
+                
+                // Missions Render
                 document.getElementById('mission-engine-root').innerHTML = (data.missions || []).map(group => `
-                    <span class="mission-group-label">${group.group}</span>
+                    <div style="font-size: 0.6rem; color: #2ecc71; margin-top: 10px; font-weight: bold;">${group.group}</div>
                     ${group.items.map(m => `
                         <div class="mission-row">
-                            <span class="text-[10px] font-bold uppercase ${m.boss ? 'boss-text' : ''}">${m.name}</span>
-                            <div class="flex items-center">
-                                <button class="btn-ctrl" onclick="updateMapStat('missionProgress', '${m.id}', -1, ${m.target})">-</button>
-                                <span class="count-display" style="min-width: 60px;">${mProg[m.id] || 0}/${m.target}</span>
-                                <button class="btn-ctrl" onclick="updateMapStat('missionProgress', '${m.id}', 1, ${m.target})">+</button>
-                            </div>
+                            <span style="font-size: 10px;">${m.name}</span>
+                            <span class="count-display">0/${m.target}</span>
                         </div>
                     `).join('')}
                 `).join('');
             };
 
-            const renderPlatformReport = () => {
-                const platData = localTrophyData[activePlatformId + '_stats'] || {};
-                const platInfo = platformMeta[activePlatformId];
-                document.getElementById('active-platform-name').innerText = platInfo.name;
-                document.getElementById('active-platform-name').style.color = platInfo.color;
-                document.getElementById('active-plat-badge').innerText = activePlatformId.toUpperCase();
-                document.getElementById('active-plat-badge').style.borderColor = platInfo.color;
-                document.getElementById('active-plat-badge').style.color = platInfo.color;
-
-                document.getElementById('platform-trophy-stats').innerHTML = achievementRanks.map(r => `
-                    <div class="mission-row border-white/5">
-                        <span class="rank-label" style="color: ${r.c}">${r.l}</span>
-                        <div class="flex items-center">
-                            <button class="btn-ctrl" style="width: 24px; height: 24px; font-size: 0.7rem;" onclick="updatePlatformStats('${activePlatformId}', '${r.k}', -1, ${r.t})">-</button>
-                            <span class="count-display" style="font-size: 0.9rem; min-width: 35px;">${platData[r.k] || 0}/${r.t}</span>
-                            <button class="btn-ctrl" style="width: 24px; height: 24px; font-size: 0.7rem;" onclick="updatePlatformStats('${activePlatformId}', '${r.k}', 1, ${r.t})">+</button>
-                        </div>
-                    </div>
-                `).join('');
-                let total = 0; achievementRanks.forEach(r => total += (platData[r.k] || 0));
-                const pct = Math.round((total / 51) * 100);
-                document.getElementById('platform-bar').style.width = pct + '%';
-                document.getElementById('platform-percent').innerText = pct + '%';
-            };
-
-            const renderRankRows = () => {
-                const ranks = [{ k: 'greatone', l: 'G.O.', c: '#ff0000' }, { k: 'diamond', l: 'Diam', c: '#00f2ff' }, { k: 'mystical', l: 'Myst', c: '#a020f0' }, { k: 'albino', l: 'Rare', c: '#ffffff' }, { k: 'gold', l: 'Gold', c: '#f1c40f' }, { k: 'silver', l: 'Silv', c: '#cbd5e1' }, { k: 'bronze', l: 'Bronz', c: '#fb923c' }];
-                document.getElementById('rank-rows-root').innerHTML = ranks.map(r => `
-                    <div class="flex flex-col items-center p-2 bg-black/40 border border-white/5 rounded-lg">
-                        <span class="text-[9px] font-black uppercase mb-1" style="color:${r.c}">${r.l}</span>
-                        <div class="flex items-center">
-                            <button class="btn-ctrl" onclick="updateGlobalStat('${r.k}', -1)">-</button>
-                            <span class="count-display" style="color:${r.c}">${localTrophyData[r.k] || 0}</span>
-                            <button class="btn-ctrl" onclick="updateGlobalStat('${r.k}', 1)">+</button>
-                        </div>
-                    </div>
-                `).join('');
-            };
-
-            // Global Overrides for HTML triggers
-            window.switchMap = (id) => { activeMapId = id; renderActiveMap(); };
-            window.switchPlatform = (id) => { activePlatformId = id; renderPlatformReport(); };
-            window.triggerUpload = (cat) => { document.getElementById('trophy-upload').setAttribute('data-cat', cat); document.getElementById('trophy-upload').click(); };
-            window.handleImageUpload = async (input) => {
-                const u = auth.currentUser; if (!u || !input.files[0]) return;
-                const cat = input.getAttribute('data-cat');
-                const path = `artifacts/${appId}/public/data/userImages/${u.uid}/${cat}_${Date.now()}`;
-                const task = storage.ref(path).put(input.files[0]);
-                task.on('state_changed', null, null, async () => {
-                    const url = await task.snapshot.ref.getDownloadURL();
-                    getPath(u).set({ [`img_${cat}`]: url }, { merge: true });
-                });
-            };
-
-            const checkTwitch = async () => {
-                try {
-                    const res = await fetch('https://decapi.me/twitch/game/werewolf3788');
-                    const game = await res.text();
-                    document.getElementById('twitch-status').innerText = `Twitch: Playing ${game || 'Offline'}`;
-                } catch(e) { }
-            };
-
             loadRegistry();
-            checkTwitch();
         };
 
         window.onload = startApp;
-        window.syncWithPSN = () => {
-            const btn = document.getElementById('sync-btn'); btn.innerText = "🔄 Syncing...";
-            setTimeout(() => { btn.innerText = "✅ Done"; setTimeout(() => btn.innerText = "🔄 Sync Profile", 2000); }, 1500);
-        };
     </script>
 </div>
