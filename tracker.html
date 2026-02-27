@@ -25,15 +25,15 @@
         </header>
 
         <div class="section-title border-blue-500/50 text-blue-400">🗺️ Tactical Reserve Map</div>
-        <div id="tactical-map-container" style="width: 100%; aspect-ratio: 1/1; background: #000; border: 2px solid #2ecc71; border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
-            <iframe id="map-frame" src="" style="width: 100%; height: 100%; border: none; display: none; background: transparent;"></iframe>
-            <div id="map-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: bold; text-align: center; padding: 20px;">
-                SELECT A RESERVE BELOW TO LOAD THE TACTICAL MAP
+        <div id="tactical-map-viewport" class="map-viewport">
+            <iframe id="map-frame" src="" class="map-iframe"></iframe>
+            <div id="map-loader" class="map-loader-overlay">
+                <p>SELECT A RESERVE TO INITIALIZE TACTICAL OVERLAY</p>
             </div>
         </div>
 
         <div class="section-title border-emerald-500/50 text-emerald-400 flex justify-between items-center">
-            <span>📊 <span id="display-map-name">Reserve</span> Intel</span>
+            <span>🗺️ <span id="display-map-name">Reserve</span> Intel & Missions</span>
             <select id="map-selector" onchange="switchMap(this.value)" class="map-select-dropdown">
                 <option>Loading Maps...</option>
             </select>
@@ -43,7 +43,7 @@
             <div class="mission-card-simple p-4">
                 <p class="section-sub">Map Species Harvests</p>
                 <div id="species-harvest-root"></div>
-                <p class="section-sub mt-6">G.O. Grind</p>
+                <p class="section-sub mt-6">G.O. Grind (Map Specific)</p>
                 <div id="go-grind-root"></div>
             </div>
             <div class="mission-card-simple p-4 mission-scroll-container">
@@ -52,108 +52,109 @@
             </div>
         </div>
 
-        <div class="section-title game-stats-title">🏆 Lifetime Harvest Ranks</div>
-        <div class="mission-card-simple mb-8 p-4"><div id="rank-rows-root" class="rank-grid"></div></div>
-
         <footer class="tracker-footer">
             <div class="footer-links">
                 <a href="https://www.amazon.com/gp/goldbox?tag=todaysdealswerewolf-20" target="_blank">Today's Deals</a>
                 <a href="https://www.amazon.com/s?k=fishing&tag=psngaming-20" target="_blank">Hunting Gear</a>
                 <a href="https://www.amazon.com/s?k=farming&tag=psngaming-20" target="_blank">Farming Tools</a>
             </div>
-            <p>Lead Dev: Werewolf3788 | Source: KFruti88 GitHub | v2.5.2</p>
+            <p>Lead Dev: Werewolf3788 | GitHub: KFruti88</p>
         </footer>
     </div>
 
     <style>
-        #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', sans-serif; color: #fff; display: flex; justify-content: center; width: 100%; }
-        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 25px; box-sizing: border-box; }
-        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; font-size: 1.6rem; margin: 0; }
-        .section-title { background: rgba(46, 204, 113, 0.1); padding: 10px; margin: 20px 0 10px; border-left: 6px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
-        .game-stats-title { border-left-color: #f39c12; color: #f39c12; }
+        #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', sans-serif; color: #ffffff; display: flex; justify-content: center; width: 100%; }
+        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 20px; box-shadow: 0 20px 80px rgba(0,0,0,0.9); box-sizing: border-box; }
+        
+        /* Map Viewport Styles */
+        .map-viewport { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border: 2px solid #2ecc71; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+        .map-iframe { width: 100%; height: 100%; border: none; display: none; }
+        .map-loader-overlay { display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: bold; font-size: 0.8rem; text-align: center; padding: 20px; }
+
+        /* Dashboard Components */
+        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; letter-spacing: 2px; font-size: 1.4rem; margin: 0; }
+        .section-title { background: rgba(46, 204, 113, 0.1); padding: 8px 12px; margin: 20px 0 10px; border-left: 5px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
         .grid-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) { .grid-container { grid-template-columns: 4fr 6fr; } }
-        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; padding: 8px; border-radius: 6px; font-weight: bold; }
-        .mission-row, .species-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px; margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.05); }
-        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; }
-        .count-display { color: #2ecc71; font-weight: 800; margin: 0 10px; }
-        .psn-card-img { height: 50px; margin-top: 10px; border-radius: 6px; }
-        .twitch-status { font-size: 0.65rem; color: #9146ff; border: 1px solid #9146ff; padding: 2px 8px; border-radius: 4px; margin-top: 5px; display: inline-block; }
-        .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+        
+        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 4px; padding: 5px; cursor: pointer; }
+        .species-row, .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 6px; background: rgba(255,255,255,0.05); margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; }
+        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 25px; height: 25px; cursor: pointer; border-radius: 4px; }
+        .count-display { color: #2ecc71; font-weight: bold; margin: 0 10px; }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .cotw-dashboard { width: 95%; padding: 15px; }
+            .map-viewport { aspect-ratio: 1/1; } /* 1:1 Ratio for Mobile */
+            .header-top { flex-direction: column; align-items: center; text-align: center; }
+        }
     </style>
 
     <script>
         const startApp = () => {
             if (typeof firebase === 'undefined') { setTimeout(startApp, 100); return; }
             
-            // Initialization
-            const db = firebase.firestore();
             let mapSkeleton = {};
             let activeMapId = '';
 
-            // --- LOAD MAP DATA FROM GITHUB ---
             const loadRegistry = async () => {
                 const rawUrl = `https://raw.githubusercontent.com/KFruti88/PSN/main/Skeleton/thehunter/map_data.json`;
                 try {
-                    const res = await fetch(rawUrl);
-                    const data = await res.json();
-                    mapSkeleton = data;
+                    const response = await fetch(rawUrl);
+                    mapSkeleton = await response.json();
                     
                     const selector = document.getElementById('map-selector');
-                    selector.innerHTML = '<option value="">-- Choose Reserve --</option>';
-                    
-                    Object.keys(data).forEach(id => {
+                    selector.innerHTML = '<option value="">-- SELECT RESERVE --</option>';
+                    Object.keys(mapSkeleton).forEach(id => {
                         const opt = document.createElement('option');
                         opt.value = id;
-                        opt.text = data[id].name;
+                        opt.text = mapSkeleton[id].name;
                         selector.add(opt);
                     });
-                    document.getElementById('stats-summary').innerText = `Registry: ${Object.keys(data).length} Reserves Synced`;
-                } catch (e) { console.error("Data Load Fail", e); }
+                    document.getElementById('stats-summary').innerText = `Registry: ${Object.keys(mapSkeleton).length} Reserves Synced`;
+                } catch (e) { console.error("Registry Sync Fail", e); }
             };
 
-            // --- MAP SWITCHER (Logic to load the HTML file) ---
+            // INTERCHANGEABLE MAP LOGIC
             window.switchMap = (id) => {
-                if(!id) return;
+                if (!id) return;
                 activeMapId = id;
-                
-                // 1. Update Tracker Text
                 document.getElementById('display-map-name').innerText = mapSkeleton[id].name;
                 
-                // 2. Load the actual HTML Map from your GitHub Pages
-                // This assumes your GitHub Pages is active at kfruti88.github.io
-                const mapFrame = document.getElementById('map-frame');
-                const placeholder = document.getElementById('map-placeholder');
+                // Load the HTML file from your GitHub Pages
+                const frame = document.getElementById('map-frame');
+                const loader = document.getElementById('map-loader');
                 
-                mapFrame.src = `https://kfruti88.github.io/PSN/Skeleton/thehunter/${id}.html`;
-                mapFrame.style.display = "block";
-                placeholder.style.display = "none";
+                // This targets the specific HTML map files in your repo
+                frame.src = `https://kfruti88.github.io/PSN/Skeleton/thehunter/${id}.html`;
+                frame.style.display = "block";
+                loader.style.display = "none";
 
-                renderActiveMap(); // Runs your species/mission lists
+                renderLists();
             };
 
-            const renderActiveMap = () => {
+            const renderLists = () => {
                 const data = mapSkeleton[activeMapId];
                 if (!data) return;
-                
-                // Species Render
+
+                // Species List
                 document.getElementById('species-harvest-root').innerHTML = (data.species || []).map(s => `
                     <div class="species-row">
-                        <span style="font-size: 10px;">CL ${s.class} <strong>${s.name}</strong></span>
-                        <div class="flex items-center">
+                        <span>CL ${s.class} <strong>${s.name}</strong></span>
+                        <div class="flex">
                             <button class="btn-ctrl">-</button>
                             <span class="count-display">0</span>
                             <button class="btn-ctrl">+</button>
                         </div>
                     </div>
                 `).join('');
-                
-                // Missions Render
-                document.getElementById('mission-engine-root').innerHTML = (data.missions || []).map(group => `
-                    <div style="font-size: 0.6rem; color: #2ecc71; margin-top: 10px; font-weight: bold;">${group.group}</div>
-                    ${group.items.map(m => `
+
+                // Missions List
+                document.getElementById('mission-engine-root').innerHTML = (data.missions || []).map(g => `
+                    <div style="font-size: 0.6rem; color: #2ecc71; margin-top: 10px; font-weight: 900;">${g.group}</div>
+                    ${g.items.map(m => `
                         <div class="mission-row">
-                            <span style="font-size: 10px;">${m.name}</span>
+                            <span>${m.name}</span>
                             <span class="count-display">0/${m.target}</span>
                         </div>
                     `).join('')}
@@ -164,5 +165,6 @@
         };
 
         window.onload = startApp;
+        window.syncWithPSN = () => { alert("Syncing with PSN Cloud..."); };
     </script>
 </div>
