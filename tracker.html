@@ -12,30 +12,25 @@
                     <div id="twitch-status" class="twitch-status">Twitch: Checking Status...</div>
                 </div>
                 <div class="header-controls">
-                    <span id="version-tag" class="text-[9px] opacity-30 mr-2">v2.5.2</span>
+                    <span id="version-tag" class="text-[9px] opacity-30 mr-2">v2.5.3</span>
                     <button id="sync-btn" onclick="syncWithPSN()" class="sync-button">🔄 Sync Profile</button>
                 </div>
             </div>
-            <p id="stats-summary" class="status-text">Registry: Booting...</p>
-            <div class="psn-card-container">
-                <a href="https://psnprofiles.com/Werewolf3788" target="_blank">
-                    <img src="https://card.psnprofiles.com/1/Werewolf3788.png" border="0" alt="Werewolf PSN Card" class="psn-card-img">
-                </a>
-            </div>
+            <p id="stats-summary" class="status-text">Registry: Initializing...</p>
         </header>
 
-        <div class="section-title border-blue-500/50 text-blue-400">🗺️ Tactical Reserve Map</div>
+        <div class="section-title border-blue-500/50 text-blue-400">🗺️ Tactical Reserve Map (Active View)</div>
         <div id="tactical-map-viewport" class="map-viewport">
             <iframe id="map-frame" src="" class="map-iframe"></iframe>
             <div id="map-loader" class="map-loader-overlay">
-                <p>SELECT A RESERVE TO INITIALIZE TACTICAL OVERLAY</p>
+                <p>SELECT A RESERVE BELOW TO LOAD TACTICAL INTEL</p>
             </div>
         </div>
 
         <div class="section-title border-emerald-500/50 text-emerald-400 flex justify-between items-center">
-            <span>🗺️ <span id="display-map-name">Reserve</span> Intel & Missions</span>
+            <span>📊 <span id="display-map-name">Reserve</span> Data & Missions</span>
             <select id="map-selector" onchange="switchMap(this.value)" class="map-select-dropdown">
-                <option>Loading Maps...</option>
+                <option>Connecting to GitHub...</option>
             </select>
         </div>
 
@@ -43,7 +38,7 @@
             <div class="mission-card-simple p-4">
                 <p class="section-sub">Map Species Harvests</p>
                 <div id="species-harvest-root"></div>
-                <p class="section-sub mt-6">G.O. Grind (Map Specific)</p>
+                <p class="section-sub mt-6">G.O. Grind Progress</p>
                 <div id="go-grind-root"></div>
             </div>
             <div class="mission-card-simple p-4 mission-scroll-container">
@@ -58,45 +53,47 @@
                 <a href="https://www.amazon.com/s?k=fishing&tag=psngaming-20" target="_blank">Hunting Gear</a>
                 <a href="https://www.amazon.com/s?k=farming&tag=psngaming-20" target="_blank">Farming Tools</a>
             </div>
-            <p>Lead Dev: Werewolf3788 | GitHub: KFruti88</p>
+            <p>Lead Dev: Werewolf3788 | GitHub: KFruti88 | v2.5.3</p>
         </footer>
     </div>
 
     <style>
         #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', sans-serif; color: #ffffff; display: flex; justify-content: center; width: 100%; }
-        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 20px; box-shadow: 0 20px 80px rgba(0,0,0,0.9); box-sizing: border-box; }
+        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 25px; box-sizing: border-box; }
         
-        /* Map Viewport Styles */
+        /* Tactical Viewport (Main interchangeable screen) */
         .map-viewport { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border: 2px solid #2ecc71; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-        .map-iframe { width: 100%; height: 100%; border: none; display: none; }
-        .map-loader-overlay { display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: bold; font-size: 0.8rem; text-align: center; padding: 20px; }
+        .map-iframe { width: 100%; height: 100%; border: none; display: none; background: transparent; }
+        .map-loader-overlay { display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; }
 
-        /* Dashboard Components */
-        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; letter-spacing: 2px; font-size: 1.4rem; margin: 0; }
-        .section-title { background: rgba(46, 204, 113, 0.1); padding: 8px 12px; margin: 20px 0 10px; border-left: 5px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
+        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem; margin: 0; }
+        .section-title { background: rgba(46, 204, 113, 0.1); padding: 10px; margin: 25px 0 10px; border-left: 5px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
         .grid-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) { .grid-container { grid-template-columns: 4fr 6fr; } }
         
-        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 4px; padding: 5px; cursor: pointer; }
-        .species-row, .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 6px; background: rgba(255,255,255,0.05); margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; }
-        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 25px; height: 25px; cursor: pointer; border-radius: 4px; }
-        .count-display { color: #2ecc71; font-weight: bold; margin: 0 10px; }
+        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 6px; padding: 8px; font-weight: bold; cursor: pointer; }
+        .species-row, .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.05); margin-bottom: 6px; border-radius: 8px; font-size: 0.8rem; }
+        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.2s; }
+        .btn-ctrl:hover { background: #2ecc71; color: #000; }
+        .count-display { color: #2ecc71; font-weight: 800; margin: 0 10px; }
 
-        /* Mobile Optimization */
+        /* Mobile Responsive (1:1 Ratio) */
         @media (max-width: 768px) {
             .cotw-dashboard { width: 95%; padding: 15px; }
-            .map-viewport { aspect-ratio: 1/1; } /* 1:1 Ratio for Mobile */
-            .header-top { flex-direction: column; align-items: center; text-align: center; }
+            .map-viewport { aspect-ratio: 1/1 !important; }
+            .header-top { flex-direction: column; gap: 10px; }
         }
     </style>
 
-    <script>
-        const startApp = () => {
+    <script type="module">
+        // Using type="module" fixes the "Unexpected token export" error
+        const startApp = async () => {
             if (typeof firebase === 'undefined') { setTimeout(startApp, 100); return; }
             
             let mapSkeleton = {};
             let activeMapId = '';
 
+            // Fetch Reserve Data from GitHub
             const loadRegistry = async () => {
                 const rawUrl = `https://raw.githubusercontent.com/KFruti88/PSN/main/Skeleton/thehunter/map_data.json`;
                 try {
@@ -104,54 +101,56 @@
                     mapSkeleton = await response.json();
                     
                     const selector = document.getElementById('map-selector');
-                    selector.innerHTML = '<option value="">-- SELECT RESERVE --</option>';
+                    selector.innerHTML = '<option value="">-- INITIALIZE RESERVE --</option>';
                     Object.keys(mapSkeleton).forEach(id => {
                         const opt = document.createElement('option');
                         opt.value = id;
                         opt.text = mapSkeleton[id].name;
                         selector.add(opt);
                     });
-                    document.getElementById('stats-summary').innerText = `Registry: ${Object.keys(mapSkeleton).length} Reserves Synced`;
-                } catch (e) { console.error("Registry Sync Fail", e); }
+                    document.getElementById('stats-summary').innerText = `Registry Synced: ${Object.keys(mapSkeleton).length} Reserves Live`;
+                } catch (e) { 
+                    console.error("Registry Sync Fail", e); 
+                    document.getElementById('stats-summary').innerText = "Registry Sync Failed (Check GitHub Source)";
+                }
             };
 
-            // INTERCHANGEABLE MAP LOGIC
+            // Interchangeable Map Viewport Logic
             window.switchMap = (id) => {
                 if (!id) return;
                 activeMapId = id;
                 document.getElementById('display-map-name').innerText = mapSkeleton[id].name;
                 
-                // Load the HTML file from your GitHub Pages
                 const frame = document.getElementById('map-frame');
                 const loader = document.getElementById('map-loader');
                 
-                // This targets the specific HTML map files in your repo
+                // Targets the HTML map files in your GitHub directory
                 frame.src = `https://kfruti88.github.io/PSN/Skeleton/thehunter/${id}.html`;
                 frame.style.display = "block";
                 loader.style.display = "none";
 
-                renderLists();
+                renderReserveStats();
             };
 
-            const renderLists = () => {
+            const renderReserveStats = () => {
                 const data = mapSkeleton[activeMapId];
                 if (!data) return;
 
-                // Species List
+                // Species Rendering
                 document.getElementById('species-harvest-root').innerHTML = (data.species || []).map(s => `
                     <div class="species-row">
                         <span>CL ${s.class} <strong>${s.name}</strong></span>
-                        <div class="flex">
-                            <button class="btn-ctrl">-</button>
+                        <div class="flex items-center">
+                            <button class="btn-ctrl" onclick="console.log('minus')">-</button>
                             <span class="count-display">0</span>
-                            <button class="btn-ctrl">+</button>
+                            <button class="btn-ctrl" onclick="console.log('plus')">+</button>
                         </div>
                     </div>
                 `).join('');
 
-                // Missions List
+                // Mission Rendering
                 document.getElementById('mission-engine-root').innerHTML = (data.missions || []).map(g => `
-                    <div style="font-size: 0.6rem; color: #2ecc71; margin-top: 10px; font-weight: 900;">${g.group}</div>
+                    <div style="font-size: 0.65rem; color: #2ecc71; margin-top: 12px; font-weight: bold; border-bottom: 1px solid rgba(46,204,113,0.2);">${g.group}</div>
                     ${g.items.map(m => `
                         <div class="mission-row">
                             <span>${m.name}</span>
@@ -161,10 +160,19 @@
                 `).join('');
             };
 
-            loadRegistry();
+            const checkTwitch = async () => {
+                try {
+                    const res = await fetch('https://decapi.me/twitch/game/werewolf3788');
+                    const game = await res.text();
+                    document.getElementById('twitch-status').innerText = `Twitch: Playing ${game || 'Offline'}`;
+                } catch(e) { }
+            };
+
+            await loadRegistry();
+            checkTwitch();
         };
 
         window.onload = startApp;
-        window.syncWithPSN = () => { alert("Syncing with PSN Cloud..."); };
+        window.syncWithPSN = () => { alert("Manual Cloud Sync Initiated..."); };
     </script>
 </div>
