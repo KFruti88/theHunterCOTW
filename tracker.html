@@ -5,160 +5,59 @@
 
     <div class="cotw-dashboard">
         <header class="tracker-header">
-            <div class="header-top">
-                <div class="flex flex-col items-start text-left">
-                    <h1>COTW: Master Tracker</h1>
-                    <div id="twitch-status" class="twitch-status">Twitch: Checking Status...</div>
-                </div>
-                <div class="header-controls">
-                    <span id="version-tag" class="text-[9px] opacity-30 mr-2">v2.5.5</span>
-                    <button id="sync-btn" onclick="syncWithPSN()" class="sync-button">🔄 Sync Profile</button>
-                </div>
-            </div>
-            <p id="stats-summary" class="status-text">Registry: Syncing with GitHub Skeleton...</p>
+            <h1>COTW: Master Tracker</h1>
+            <p id="stats-summary" class="status-text">Registry: Syncing...</p>
         </header>
 
-        <div class="section-title border-blue-500/50 text-blue-400">🗺️ Tactical Reserve Map</div>
-        <div id="main-map-viewport" class="map-viewport">
+        <div class="section-title">🗺️ Tactical Reserve Map</div>
+        <div id="map-viewport" class="map-viewport">
             <iframe id="map-frame" src="" class="map-iframe"></iframe>
-            <div id="map-loader" class="map-loader-overlay">
-                <p>INITIALIZING TACTICAL OVERLAY... SELECT A RESERVE BELOW</p>
-            </div>
+            <div id="map-loader" class="map-loader-overlay">SELECT RESERVE TO LOAD MAP</div>
         </div>
 
-        <div class="section-title border-emerald-500/50 text-emerald-400 flex justify-between items-center">
-            <span>📊 <span id="display-map-name">Reserve</span> Intel</span>
-            <select id="map-selector" class="map-select-dropdown">
-                <option>Connecting to Registry...</option>
-            </select>
-        </div>
+        <div class="section-title">📊 Reserve Intel</div>
+        <select id="map-selector" class="map-select-dropdown">
+            <option>Connecting...</option>
+        </select>
 
-        <div class="grid-container mb-8 text-left">
-            <div class="mission-card-simple p-4">
-                <p class="section-sub">Map Species Harvests</p>
-                <div id="species-harvest-root"></div>
-                <p class="section-sub mt-6">G.O. Grind Progress</p>
-                <div id="go-grind-root"></div>
-            </div>
-            <div class="mission-card-simple p-4 mission-scroll-container">
-                <p class="section-sub" id="mission-warden-label">Reserve Missions</p>
-                <div id="mission-engine-root"></div>
-            </div>
-        </div>
-
-        <footer class="tracker-footer">
-            <p>Lead Dev: Werewolf3788 | GitHub: KFruti88 | v2.5.5</p>
-        </footer>
+        <div id="species-harvest-root" class="grid-container"></div>
     </div>
 
     <style>
-        #wp-custom-wrapper { background: transparent !important; padding: 20px 0; font-family: 'Segoe UI', sans-serif; color: #fff; display: flex; justify-content: center; width: 100%; }
-        .cotw-dashboard { width: 90%; max-width: 1200px; background: rgba(8, 12, 8, 0.98); border: 2px solid #2ecc71; border-radius: 16px; padding: 25px; box-sizing: border-box; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
-        
-        /* Tactical Viewport (Interchangeable Screen) */
-        .map-viewport { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border: 2px solid #2ecc71; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-        .map-iframe { width: 100%; height: 100%; border: none; display: none; background: transparent; }
-        .map-loader-overlay { display: flex; align-items: center; justify-content: center; height: 100%; color: #2ecc71; font-weight: 800; font-size: 0.8rem; text-align: center; padding: 20px; }
-
-        .tracker-header h1 { color: #2ecc71; text-transform: uppercase; font-size: 1.5rem; margin: 0; letter-spacing: 2px; }
-        .section-title { background: rgba(46, 204, 113, 0.1); padding: 10px; margin: 25px 0 10px; border-left: 5px solid #2ecc71; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; }
-        
-        .grid-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) { .grid-container { grid-template-columns: 4fr 6fr; } }
-        
-        .map-select-dropdown { background: #000; color: #2ecc71; border: 1px solid #2ecc71; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .species-row, .mission-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.05); margin-bottom: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02); }
-        .btn-ctrl { background: #1a2a1a; color: #2ecc71; border: 1px solid #2ecc71; width: 30px; height: 30px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .count-display { color: #2ecc71; font-weight: 900; margin: 0 10px; font-family: monospace; }
-
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            .map-viewport { aspect-ratio: 1/1 !important; } /* Force 1:1 on Mobile */
-            .cotw-dashboard { width: 95%; padding: 15px; }
-            .header-top { flex-direction: column; align-items: center; text-align: center; }
-        }
+        #wp-custom-wrapper { width: 90%; margin: 0 auto; color: #fff; }
+        .cotw-dashboard { background: #080c08; border: 2px solid #2ecc71; padding: 20px; border-radius: 12px; }
+        .map-viewport { width: 100%; aspect-ratio: 16/9; background: #000; border: 1px solid #2ecc71; }
+        .map-iframe { width: 100%; height: 100%; border: none; display: none; }
+        @media (max-width: 768px) { .map-viewport { aspect-ratio: 1/1 !important; } }
     </style>
 
     <script type="module">
-        // Crucial: type="module" prevents the 'Unexpected token export' SyntaxError
-        const GITHUB_PAGES_URL = "https://kfruti88.github.io/PSN/Skeleton/thehunter/";
-        const REGISTRY_JSON = "https://raw.githubusercontent.com/KFruti88/PSN/main/Skeleton/thehunter/map_data.json";
+        const REGISTRY = "https://raw.githubusercontent.com/KFruti88/PSN/main/Skeleton/thehunter/map_data.json";
+        const GITHUB_BASE = "https://kfruti88.github.io/PSN/Skeleton/thehunter/";
 
-        const startApp = async () => {
-            let mapSkeleton = {};
-            let activeMapId = '';
-
-            const loadRegistry = async () => {
-                try {
-                    const response = await fetch(REGISTRY_JSON);
-                    mapSkeleton = await response.json();
-                    
-                    const selector = document.getElementById('map-selector');
-                    selector.innerHTML = '<option value="">-- INITIALIZE TACTICAL RESERVE --</option>';
-                    
-                    Object.keys(mapSkeleton).forEach(id => {
-                        const opt = document.createElement('option');
-                        opt.value = id;
-                        opt.text = mapSkeleton[id].name;
-                        selector.add(opt);
-                    });
-                    
-                    selector.addEventListener('change', (e) => switchMap(e.target.value));
-                    document.getElementById('stats-summary').innerText = `Registry Synced: ${Object.keys(mapSkeleton).length} Reserves Live`;
-                } catch (e) {
-                    console.error("Registry Sync Fail:", e);
-                    document.getElementById('stats-summary').innerText = "GitHub Sync Error - Check Console";
-                }
-            };
-
-            const switchMap = (id) => {
-                if (!id) return;
-                activeMapId = id;
-                document.getElementById('display-map-name').innerText = mapSkeleton[id].name;
+        async function start() {
+            try {
+                const res = await fetch(REGISTRY);
+                const maps = await res.json();
+                const selector = document.getElementById('map-selector');
                 
-                const frame = document.getElementById('map-frame');
-                const loader = document.getElementById('map-loader');
-                
-                // Load Interchangeable Map into the Viewport
-                frame.src = `${GITHUB_PAGES_URL}${id}.html`;
-                frame.style.display = "block";
-                loader.style.display = "none";
+                selector.innerHTML = '<option value="">-- CHOOSE RESERVE --</option>';
+                Object.keys(maps).forEach(id => {
+                    const opt = document.createElement('option');
+                    opt.value = id; opt.text = maps[id].name;
+                    selector.add(opt);
+                });
 
-                renderLists();
-            };
-
-            const renderLists = () => {
-                const data = mapSkeleton[activeMapId];
-                if (!data) return;
-
-                // Species List
-                document.getElementById('species-harvest-root').innerHTML = (data.species || []).map(s => `
-                    <div class="species-row">
-                        <span style="font-size: 10px;">CL ${s.class} <strong>${s.name}</strong></span>
-                        <div class="flex items-center">
-                            <button class="btn-ctrl">-</button>
-                            <span class="count-display">0</span>
-                            <button class="btn-ctrl">+</button>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Mission List
-                document.getElementById('mission-engine-root').innerHTML = (data.missions || []).map(g => `
-                    <div style="font-size: 0.65rem; color: #2ecc71; margin: 12px 0 5px; font-weight: 900; text-transform: uppercase; border-bottom: 1px solid rgba(46,204,113,0.2);">${g.group}</div>
-                    ${g.items.map(m => `
-                        <div class="mission-row">
-                            <span style="font-size: 10px;">${m.name}</span>
-                            <span class="count-display">0/${m.target}</span>
-                        </div>
-                    `).join('')}
-                `).join('');
-            };
-
-            await loadRegistry();
-        };
-
-        window.onload = startApp;
-        window.syncWithPSN = () => { alert("Initializing Cloud Handshake..."); };
+                selector.onchange = (e) => {
+                    const id = e.target.value;
+                    if(!id) return;
+                    document.getElementById('map-frame').src = `${GITHUB_BASE}${id}.html`;
+                    document.getElementById('map-frame').style.display = "block";
+                    document.getElementById('map-loader').style.display = "none";
+                };
+                document.getElementById('stats-summary').innerText = "Registry Synced";
+            } catch (e) { console.error("Sync Failed", e); }
+        }
+        window.onload = start;
     </script>
 </div>
